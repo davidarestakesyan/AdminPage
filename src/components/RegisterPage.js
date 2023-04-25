@@ -1,4 +1,5 @@
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Link } from "react-router-dom";
+import { Button, Checkbox, Form, Input, } from 'antd';
 const onFinish = (values) => {
   console.log('Success:', values);
 };
@@ -6,6 +7,10 @@ const onFinishFailed = (errorInfo) => {
   console.log('Failed:', errorInfo);
 };
 const RegisterPagef = () => (
+   
+   <div className='allregister'>
+      <div className='login'>Register</div>
+         <div className='registerr'>
   <Form
     name="basic"
     labelCol={{
@@ -70,7 +75,11 @@ const RegisterPagef = () => (
       <Button type="primary" htmlType="submit">
         Submit
       </Button>
+      <br></br>
+     <button> <Link to={"/LoginPage"} >Log In </Link></button>
     </Form.Item>
   </Form>
+  </div>
+  </div>
 );
 export default RegisterPagef;

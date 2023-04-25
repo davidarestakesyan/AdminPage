@@ -5,13 +5,15 @@ import AdminPagef from './components/AdminPage';
 import Allusersf from './pages/Allusersf';
 import Allproductsf from './pages/Allproductsf';
 import Allcategorysf from './pages/Allcategorysf';
+import LoginPagef from './components/LoginPage';
 
 function App() {
   return (
     <div className="App">
       <Routes>
           <Route path="/" element={<RegisterPagef />} /> 
-           <Route path="/AdminPage" element={<AdminPagef />} >
+          <Route path='LoginPage'element = {<LoginPagef/>} /> 
+           <Route path="AdminPage" element={<AdminPagef />} >
             <Route path="allusers" element={<Allusersf />}/>
             <Route path="allproducts" element={<Allproductsf />}/>
             <Route path="allcategorys" element={<Allcategorysf/>}/>

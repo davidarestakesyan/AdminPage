@@ -1,1 +1,17 @@
+.login{
+   font-size: 50px;
+   display: flex;
+   justify-content: center;
+   color: #000000;
+   margin-top: 250px;
+}
 
+
+
+.registerr{
+margin-left: 30%;
+}
+
+body{
+   background-color: lightgray;
+}

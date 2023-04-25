@@ -1,6 +1,16 @@
-import { Table } from 'antd';
+import { Table,Button } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
+
+import {FaEdit} from 'react-icons/fa';
+import {MdOutlineCreateNewFolder} from 'react-icons/md';
+import {RiDeleteBinFill} from 'react-icons/ri';
+
+
+
+
+
+
 const columns = [
   {
     title:'Name',
@@ -23,15 +33,47 @@ const columns = [
    dataIndex:'categoryId',
  },
  {
-   title:'CreatedAt',
-   dataIndex:'createdAt',
- },
- {
-   title:'UpdatedAt',
-   dataIndex:'updatedAt',
- }
+  title:'Action',
+  dataIndex:'',
+  render: (_, record) => (
+    <>
+      <Button type='link' onClick={() => console.log('Edit')}>
+        <FaEdit />
+      </Button>
+      <Button type='link' onClick={() => console.log('Save')}>
+        { <MdOutlineCreateNewFolder/> }
+      </Button>
+      <Button type='link' onClick={() => console.log('Delete')}>
+        <RiDeleteBinFill />
+      </Button>
+    </>
+  ),
+},
+//  ,
+//  {title : "Actions",
+//  render:(_,record)=>{
+//   return <>
+//   <Button type='link' onClick={() => {
+//     setEditRow(record.key);
+//     form.setFieldsValue({
+//       name:record.name,
+//       image:record.image,
+//       description:record.description,
+//       price:record.price,
+//       categoryId:record.categoryId
+//     })
+//   }}
+//   ><FaEdit/></Button>
+//   <Button type='link' htmlType='submit'><IoSaveSharp/></Button>
+//   <Button 
+//   type='link'
+//   onClick={() => handleDelete(record.id)}
+//   ><RiDeleteBinFill/></Button>
+//   </>
+//  }
+// }
 ];
-
+ 
 const Allproductsf = () => {
   const [users,setUsers] = useState([])
   useEffect(() => {
@@ -44,6 +86,35 @@ const Allproductsf = () => {
         console.error(error);
       }
     };
+
+const deleteProduct = async (id) => {
+    const token = JSON.parse(localStorage.getItem('user'));
+    console.log(token.jwt,'t');
+    try {
+      const response = await fetch(
+        `http://localhost:5000/deleteproduct/${id}`,
+        {
+          method: "DELETE",
+          body: JSON.stringify({
+            id,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Authorization": token.jwt
+          },
+        }
+      );
+      // if(response.status === 401 || response.status === 403){
+      //   console.log(response.status);
+      //   navigate('/');
+      // }
+      const data = await response.json();
+      // setIsDel(!isDel);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 
     fetchUsers();
   }, []);
