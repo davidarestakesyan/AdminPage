@@ -47,13 +47,15 @@ const LoginPagef = () => {
     });
 
     const data = await response.json();
-    if (data.status === "Logged in" && data.role === 1) {
+    console.log(data)
+    localStorage.setItem("token", data.jwt)
+    if (data.status === "Logged in" && data.user.role === 1) {
+ 
       console.log(123)
-      navigate("/admin");
+      navigate('/AdminPage');
     } else if (
       data.status === "Logged in" &&
-      data.role === 0 &&
-      data.is_verified === 1
+      data.role === 0 
     ) {
       navigate("/");
     }

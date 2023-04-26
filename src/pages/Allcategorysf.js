@@ -1,6 +1,9 @@
-import { Table } from 'antd';
+import { Table,Button } from 'antd';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import {FaEdit} from 'react-icons/fa';
+import {RiDeleteBinFill} from 'react-icons/ri';
+
 const columns = [
   {
     title: 'CategoryId',
@@ -10,14 +13,22 @@ const columns = [
    title: 'Name',
    dataIndex: 'name',
  },
-  {
-    title: ' CreatedAt',
-    dataIndex: 'createdAt',
-  },
-  {
-    title: 'UpdatedAt',
-    dataIndex: 'updatedAt',
-  },
+ {
+  title:'Action',
+  dataIndex:'',
+  render: (_, record) => (
+    <>
+      <Button type='link' onClick={() => console.log('Edit')}>
+        <FaEdit />
+      </Button>
+      <Button type='link'
+      //  onClick={() =>deleteProduct(record.id)}
+       >
+        <RiDeleteBinFill />
+      </Button>
+    </>
+  ),
+},
 ];
 
 const Allcategorysf = () => {

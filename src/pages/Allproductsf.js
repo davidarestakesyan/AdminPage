@@ -3,13 +3,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 
 import {FaEdit} from 'react-icons/fa';
-import {MdOutlineCreateNewFolder} from 'react-icons/md';
 import {RiDeleteBinFill} from 'react-icons/ri';
-
-
-
-
-
 
 const columns = [
   {
@@ -40,10 +34,9 @@ const columns = [
       <Button type='link' onClick={() => console.log('Edit')}>
         <FaEdit />
       </Button>
-      <Button type='link' onClick={() => console.log('Save')}>
-        { <MdOutlineCreateNewFolder/> }
-      </Button>
-      <Button type='link' onClick={() => console.log('Delete')}>
+      <Button type='link' 
+      // onClick={() =>deleteProduct(record.id)}
+      >
         <RiDeleteBinFill />
       </Button>
     </>
@@ -116,6 +109,9 @@ const deleteProduct = async (id) => {
   };
 
 
+
+
+  
     fetchUsers();
   }, []);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
