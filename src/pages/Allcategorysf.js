@@ -1,93 +1,162 @@
-import { Table,Button } from 'antd';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import {FaEdit} from 'react-icons/fa';
-import {RiDeleteBinFill} from 'react-icons/ri';
-
-const columns = [
-  {
-    title: 'CategoryId',
-    dataIndex: 'id',
-  },
-  {
-   title: 'Name',
-   dataIndex: 'name',
- },
- {
-  title:'Action',
-  dataIndex:'',
-  render: (_, record) => (
-    <>
-      <Button type='link' onClick={() => console.log('Edit')}>
-        <FaEdit />
-      </Button>
-      <Button type='link'
-      //  onClick={() =>deleteProduct(record.id)}
-       >
-        <RiDeleteBinFill />
-      </Button>
-    </>
-  ),
-},
-];
+import React from 'react'
+import { Table, Typography , Space, Button, Form,Input} from 'antd';
+import { useState , useEffect } from 'react';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineSave } from 'react-icons/ai'
 
 const Allcategorysf = () => {
-  const [users,setUsers] = useState([])
+
+  const [products, setProducts] = useState([]);
+  const [editRow, setEditRow] = useState(null)
+  const [form] = Form.useForm();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchproducts = async () => {
       try {
         const response = await fetch('http://localhost:5000/allcategorys');
         const data = await response.json();
-        setUsers(data);
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    if (formSubmitted) {
+      fetchproducts();
+      setFormSubmitted(false);
+    }
+  }, [formSubmitted]);
+  
+
+  useEffect(() => {
+    const fetchproducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/allcategorys');
+        const data = await response.json();
+        setProducts(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchUsers();
+    fetchproducts();
   }, []);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
-      {
-        key: 'odd',
-        text: 'Select Odd Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
+
+  const onFinish = async (values) =>{
+    const updatedDataSource =[...products]
+    const index = updatedDataSource.findIndex((user) => user.id === editRow)
+    updatedDataSource.splice(index,1,{...values, key: editRow})
+    setProducts(updatedDataSource)
+    setEditRow(null)
+  
+    try {
+      const response = await fetch(`http://localhost:5000/updatecategory/${editRow}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      },
-      {
-        key: 'even',
-        text: 'Select Even Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-    ],
+        body: JSON.stringify(values),
+      });
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        console.error(response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  const handleDelete = async (productId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/deletecategory/${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        console.error(response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
-  return <Table rowSelection={rowSelection} columns={columns} dataSource={users.map(category => ({ ...category, key: category.id }))} />;
-};
-export default Allcategorysf ;
+
+
+  return (
+      <div className='center'>
+        <Form form={form} onFinish={onFinish}>
+        <Space size={20}>
+          <Typography.Title level={4} >Inventory</Typography.Title>
+          <Table  columns={[
+            {title : "Category Name",
+             dataIndex: "name",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="name"
+               rules = {[{
+                required: true,
+                message: "Please enter product name",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title :"Category ID",
+             dataIndex:"id",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="id"
+               rules = {[{
+                required: true,
+                message: "Please enter category",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title : "Actions",
+             render:(_,record)=>{
+              return <>
+              <Button type='link' onClick={() => {
+                setEditRow(record.key);
+                form.setFieldsValue({
+                  name:record.name,
+                 id:record.id
+                })
+              }}
+              
+              ><AiOutlineEdit/></Button>
+              <Button type='link' htmlType='submit'><AiOutlineSave/></Button>
+              <Button 
+              type='link'
+              onClick={() => handleDelete(record.id)}
+              ><AiOutlineDelete/></Button>
+              </>
+             }
+            },
+          ]}
+          dataSource={products.map(product => ({ ...product, key: product.id }))}
+          >
+          </Table>
+        </Space>
+        </Form>
+     </div>
+  )
+}
+
+export default Allcategorysf

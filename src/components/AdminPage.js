@@ -5,6 +5,8 @@ import {
  import {FaProductHunt} from 'react-icons/fa';
  import {HiUsers} from 'react-icons/hi';
  import {BiCategoryAlt} from 'react-icons/bi'
+ import {CgProductHunt} from 'react-icons/cg'
+ import {MdCategory} from 'react-icons/md'
  import { Button, Layout, Menu, theme } from 'antd';
  import { useState } from 'react';
  import { useNavigate } from 'react-router-dom';
@@ -48,6 +50,16 @@ import {
                icon: <BiCategoryAlt />,
                label: 'Categorys',
              },
+             {
+              key: 'createcategorys',
+              icon: <MdCategory />,
+              label: 'Create Categorys',
+            },
+            {
+              key: 'createproducts',
+              icon: <CgProductHunt />,
+              label: 'Create Products',
+            }
            ]}
          />
        </Sider>

@@ -1,161 +1,230 @@
-import { Table,Button } from 'antd';
-import { useState } from 'react';
-import { useEffect } from 'react';
-
-import {FaEdit} from 'react-icons/fa';
-import {RiDeleteBinFill} from 'react-icons/ri';
-
-const columns = [
-  {
-    title:'Name',
-    dataIndex:'name',
-  },
-  {
-    title:'Image',
-    dataIndex:'image',
-  },
-  {
-    title:'Description',
-    dataIndex:'description',
-  },
-  {
-   title:'Price',
-   dataIndex:'price',
- },
-  {
-   title:'CategoryName',
-   dataIndex:'categoryId',
- },
- {
-  title:'Action',
-  dataIndex:'',
-  render: (_, record) => (
-    <>
-      <Button type='link' onClick={() => console.log('Edit')}>
-        <FaEdit />
-      </Button>
-      <Button type='link' 
-      // onClick={() =>deleteProduct(record.id)}
-      >
-        <RiDeleteBinFill />
-      </Button>
-    </>
-  ),
-},
-//  ,
-//  {title : "Actions",
-//  render:(_,record)=>{
-//   return <>
-//   <Button type='link' onClick={() => {
-//     setEditRow(record.key);
-//     form.setFieldsValue({
-//       name:record.name,
-//       image:record.image,
-//       description:record.description,
-//       price:record.price,
-//       categoryId:record.categoryId
-//     })
-//   }}
-//   ><FaEdit/></Button>
-//   <Button type='link' htmlType='submit'><IoSaveSharp/></Button>
-//   <Button 
-//   type='link'
-//   onClick={() => handleDelete(record.id)}
-//   ><RiDeleteBinFill/></Button>
-//   </>
-//  }
-// }
-];
- 
+import React from 'react'
+import { Table, Typography , Space, Button, Form,Input} from 'antd';
+import { useState , useEffect } from 'react';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineSave } from 'react-icons/ai'
 const Allproductsf = () => {
-  const [users,setUsers] = useState([])
+
+  const [products, setProducts] = useState([]);
+  const [editRow, setEditRow] = useState(null)
+  const [form] = Form.useForm();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchproducts = async () => {
       try {
         const response = await fetch('http://localhost:5000/allproducts');
         const data = await response.json();
-        setUsers(data);
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    if (formSubmitted) {
+      fetchproducts();
+      setFormSubmitted(false);
+    }
+  }, [formSubmitted]);
+  
+
+  useEffect(() => {
+    const fetchproducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/allproducts');
+        const data = await response.json();
+        setProducts(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-const deleteProduct = async (id) => {
-    const token = JSON.parse(localStorage.getItem('user'));
-    console.log(token.jwt,'t');
+    fetchproducts();
+  }, []);
+
+  const onFinish = async (values) =>{
+    const updatedDataSource =[...products]
+    const index = updatedDataSource.findIndex((user) => user.id === editRow)
+    updatedDataSource.splice(index,1,{...values, key: editRow})
+    setProducts(updatedDataSource)
+    setEditRow(null)
+  
     try {
-      const response = await fetch(
-        `http://localhost:5000/deleteproduct/${id}`,
-        {
-          method: "DELETE",
-          body: JSON.stringify({
-            id,
-          }),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Authorization": token.jwt
-          },
-        }
-      );
-      // if(response.status === 401 || response.status === 403){
-      //   console.log(response.status);
-      //   navigate('/');
-      // }
-      const data = await response.json();
-      // setIsDel(!isDel);
-    } catch (err) {
-      console.log(err);
+      const response = await fetch(`http://localhost:5000/updateproduct/${editRow}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        console.error(response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  const handleDelete = async (productId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/deleteproduct/${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        console.error(response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
 
+  return (
+      <div className='center'>
+        <Form form={form} onFinish={onFinish}>
+        <Space size={20}>
+          <Typography.Title level={4} >Inventory</Typography.Title>
+          <Table  columns={[
+            {title : "Product Name",
+             dataIndex: "name",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="name"
+               rules = {[{
+                required: true,
+                message: "Please enter product name",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title : "Image",
+             dataIndex: "image",
+             width : 50,
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="image"
+               rules = {[{
+                required: true,
+                message: "Please enter img",
+               }]}
+               
+               >
+                <Input />
+                </Form.Item>
+               )
+              }else{
+                return (
+                <div style={{ maxWidth: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p>{text}</p>
+                </div>
+                )
+              }
+             }
+            },
+            {title : "Description",
+             dataIndex: "description",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="description"
+               rules = {[{
+                required: true,
+                message: "Please enter  description",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title : "Price",
+             dataIndex: "price",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="price"
+               rules = {[{
+                required: true,
+                message: "Please enter price",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title :"Category",
+             dataIndex:"categoryId",
+             render:(text, record)=>{
+              if(editRow === record.key){
+               return (
+               <Form.Item 
+               name="categoryId"
+               rules = {[{
+                required: true,
+                message: "Please enter category",
+               }]}
+               >
+                <Input/>
+                </Form.Item>
+               )
+              }else{
+                return <p>{text}</p>
+              }
+             }
+            },
+            {title : "Actions",
+             render:(_,record)=>{
+              return <>
+              <Button type='link' onClick={() => {
+                setEditRow(record.key);
+                form.setFieldsValue({
+                  name:record.name,
+                  image:record.image,
+                  description:record.description,
+                  price:record.price,
+                  categoryId:record.categoryId
+                })
+              }}
+              
+              ><AiOutlineEdit/></Button>
+              <Button type='link' htmlType='submit'><AiOutlineSave/></Button>
+              <Button 
+              type='link'
+              onClick={() => handleDelete(record.id)}
+              ><AiOutlineDelete/></Button>
+              </>
+             }
+            },
+          ]}
+          dataSource={products.map(product => ({ ...product, key: product.id }))}
+          >
+          </Table>
+        </Space>
+        </Form>
+     </div>
+  )
+}
 
-
-  
-    fetchUsers();
-  }, []);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
-      {
-        key: 'odd',
-        text: 'Select Odd Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-      {
-        key: 'even',
-        text: 'Select Even Row',
-        onSelect: (changeableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-    ],
-  };
-  return <Table rowSelection={rowSelection} columns={columns} dataSource={users.map(product => ({ ...product, key:product.id }))} />;
-};
-export default Allproductsf;
+export default Allproductsf
