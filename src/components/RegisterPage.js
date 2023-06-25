@@ -18,7 +18,7 @@ const formItemLayout = {
       span: 8,
     },
   },
-  wrRegistererCol: {
+ wrregisterercol: {
     xs: {
       span: 24,
     },
@@ -28,7 +28,7 @@ const formItemLayout = {
   },
 };
 const tailFormItemLayout = {
-  wrRegistererCol: {
+ wrregisterercol: {
     xs: {
       span: 24,
       offset: 0,

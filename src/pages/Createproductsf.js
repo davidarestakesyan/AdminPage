@@ -2,6 +2,7 @@ import {
 
    Button,
    Form,
+   Upload,
    Input
  } from "antd";
  
@@ -39,19 +40,18 @@ import {
  };
  const Createproductsf = () => {
    const [form] = Form.useForm();
- 
-  
- 
-  
+
    async function addProduct(value) {
-     console.log(value);
+     console.log(value,"value");
      try {
        const response = await fetch("http://localhost:5000/createproduct", {
          method: 'POST',
-         body: JSON.stringify(value),
+         body: value,
          headers: {
-           "Content-Type": "application/json ; charset=UTF-8",
-           "Authorization": localStorage.getItem("token")
+           "Authorization": localStorage.getItem("token"),
+           "Content-Type": "multipart/form-data",
+           "Accept": "application/json",
+           "type": "formData"
          },
        });
    
@@ -64,12 +64,12 @@ import {
        console.log("An error occurred while creating the product:", error);
      }
    }
+    const handleFileUpload = (fileList) => {
+    form.setFieldsValue({ image: fileList });
+  };
    
    
-   
-   
-   
-   
+
    return (
      <div  className="registerCont">
        <div className="registerChild">
@@ -91,7 +91,7 @@ import {
        <h1>Add Product</h1>
      <Form.Item
          name="name"
-         label="Product Name"
+         label="name"
          tooltip="What is your products name?"
          rules={[
            {
@@ -105,18 +105,20 @@ import {
        </Form.Item>
  
        
-       <Form.Item
+       <Form.Item 
          name="image"
          label="image"
          rules={[
+          
            {
-             required: true,
+             required: false,
              message: "Please input your image URL !",
              whitespace: true,
            },
          ]}
        >
-         <Input/>
+  
+          <Input type="file"/> 
        </Form.Item>   
   
        <Form.Item

@@ -9,7 +9,7 @@ const Allcategorysf = () => {
   const [editRow, setEditRow] = useState(null)
   const [form] = Form.useForm();
   const [formSubmitted, setFormSubmitted] = useState(false);
-  
+  const token = localStorage.getItem("token")
   useEffect(() => {
     const fetchproducts = async () => {
       try {
@@ -53,6 +53,7 @@ const Allcategorysf = () => {
       const response = await fetch(`http://localhost:5000/updatecategory/${editRow}`, {
         method: 'PUT',
         headers: {
+          "Authorization": token,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(values),
@@ -71,6 +72,10 @@ const Allcategorysf = () => {
     try {
       const response = await fetch(`http://localhost:5000/deletecategory/${productId}`, {
         method: 'DELETE',
+        headers: {
+          "Authorization": token,
+          'Content-Type': 'application/json',
+        },
       });
       if (response.ok) {
         setFormSubmitted(true);

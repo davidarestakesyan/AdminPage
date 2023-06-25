@@ -11,7 +11,7 @@ const formItemLayout = {
       span: 8,
     },
   },
-  wrRegistererCol: {
+  wrregisterercol: {
     xs: {
       span: 24,
     },
@@ -21,7 +21,7 @@ const formItemLayout = {
   },
 };
 const tailFormItemLayout = {
-  wrRegistererCol: {
+  wrregisterercol: {
     xs: {
       span: 24,
       offset: 0,
@@ -47,7 +47,7 @@ const LoginPagef = () => {
     });
 
     const data = await response.json();
-    console.log(data)
+    console.log(data,"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
     localStorage.setItem("token", data.jwt)
     if (data.status === "Logged in" && data.user.role === 1) {
  
@@ -55,7 +55,7 @@ const LoginPagef = () => {
       navigate('/AdminPage');
     } else if (
       data.status === "Logged in" &&
-      data.role === 0 
+      data.user.role === 0 
     ) {
       navigate("/");
     }

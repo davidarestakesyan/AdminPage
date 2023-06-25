@@ -8,7 +8,7 @@ const Allproductsf = () => {
   const [editRow, setEditRow] = useState(null)
   const [form] = Form.useForm();
   const [formSubmitted, setFormSubmitted] = useState(false);
-  
+  const token = localStorage.getItem('token')
   useEffect(() => {
     const fetchproducts = async () => {
       try {
@@ -52,6 +52,7 @@ const Allproductsf = () => {
       const response = await fetch(`http://localhost:5000/updateproduct/${editRow}`, {
         method: 'PUT',
         headers: {
+          "Authorization": token,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(values),
@@ -66,10 +67,17 @@ const Allproductsf = () => {
     }
   }
   
+
+
   const handleDelete = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5000/deleteproduct/${productId}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:5000/deleteproduct/${productId}`, 
+        {  
+          method: 'DELETE',
+          headers: {
+            "Authorization": token,
+            "Content-Type":"application/json"
+        }
       });
       if (response.ok) {
         setFormSubmitted(true);
@@ -122,7 +130,7 @@ const Allproductsf = () => {
                }]}
                
                >
-                <Input />
+                <Input name = "image"/>
                 </Form.Item>
                )
               }else{
